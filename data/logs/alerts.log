@@ -1,0 +1,177 @@
+
+============================================================
+🔴 ALERT at 2026-08-08 19:47:30
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (3 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 3
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 19:49:32
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (3 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 3
+  1. EventID: 1 | \"cmd.exe\" /c whoami
+  2. EventID: 1 | whoami
+  3. EventID: 11 | 
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 20:30:02
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (3 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+  4. EventID: 1 | whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 20:30:02
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (4 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+  4. EventID: 1 | whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 20:51:24
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Lệnh được thực thi thông qua IIS Web Server (3 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 3
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 11 | 
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 20:54:45
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Lệnh được thực thi thông qua IIS Web Server (3 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 3
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 11 | 
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 21:03:40
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (4 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+  4. EventID: 1 | whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 21:03:40
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (4 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+  4. EventID: 1 | whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 21:04:28
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (4 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+  4. EventID: 1 | whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 21:04:28
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (4 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+  4. EventID: 1 | whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 21:05:53
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server. Thực thi lệnh whoami (kiểm tra người dùng hiện tại). Lệnh được thực thi thông qua IIS Web Server (3 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 3
+  1. EventID: 11 | 
+  2. EventID: 11 | 
+  3. EventID: 1 | \"cmd.exe\" /c whoami
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 21:17:10
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server (4 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 1 | cmd.exe /c ffmpeg.exe -i filepath.log -hide_banner
+  3. EventID: 11 | 
+  4. EventID: 11 | 
+============================================================
+
+============================================================
+🔴 ALERT at 2026-08-08 21:17:10
+============================================================
+Message: PHÁT HIỆN WEBSHELL: Phát hiện file WebShell (.aspx/.php) được tạo trên server (4 sự kiện)
+Level: 8
+Agent: WindowsAgent
+Confidence: 1.0
+Events: 4
+  1. EventID: 11 | 
+  2. EventID: 1 | cmd.exe /c ffmpeg.exe -i filepath.log -hide_banner
+  3. EventID: 11 | 
+  4. EventID: 11 | 
+============================================================
