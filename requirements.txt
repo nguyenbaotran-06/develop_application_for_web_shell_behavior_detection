@@ -1,0 +1,14 @@
+Flask==3.1.2
+Flask-SocketIO==5.6.1
+Flask-CORS==6.0.5
+python-socketio==5.16.3
+pandas==2.3.3
+numpy==2.4.6
+scikit-learn==1.7.2
+joblib==1.4.2
+python-dotenv==1.0.0
+requests==2.32.5
+eventlet==0.41.0
+urllib3==1.21.1
+websocket-client==1.9.0
+python-engineio==4.13.2

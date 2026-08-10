@@ -1,0 +1,563 @@
+<!-- app/templates/dashboard.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>EDR Dashboard - Chế độ Webhook</title>
+    <script src="https://cdn.socket.io/4.5.0/socket.io.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            background: #0a0e17; 
+            color: #e8edf2; 
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        
+        .header { 
+            background: #111827; 
+            padding: 25px 30px; 
+            border-radius: 12px; 
+            margin-bottom: 25px; 
+            border-bottom: 3px solid #2563eb;
+        }
+        .header h1 { 
+            font-size: 26px; 
+            font-weight: 600; 
+            color: #ffffff;
+        }
+        .header h1 span { 
+            color: #60a5fa; 
+        }
+        .header-sub {
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .live-indicator { 
+            display: inline-block; 
+            width: 8px; 
+            height: 8px; 
+            background: #34d399; 
+            border-radius: 50%; 
+            animation: pulse 1.5s infinite; 
+            margin-right: 6px;
+        }
+        @keyframes pulse { 
+            0% { opacity: 1; } 
+            50% { opacity: 0.3; } 
+            100% { opacity: 1; } 
+        }
+        .status-text { 
+            font-size: 14px; 
+            color: #9ca3af; 
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .webhook-status { 
+            background: #111827; 
+            padding: 14px 20px; 
+            border-radius: 10px; 
+            margin-bottom: 24px; 
+            border: 1px solid #1f2937;
+            font-size: 14px;
+            color: #d1d5db;
+        }
+        .webhook-status .status { 
+            color: #60a5fa; 
+            font-weight: 500;
+        }
+        
+        .stats { 
+            display: grid; 
+            grid-template-columns: repeat(6, 1fr); 
+            gap: 16px; 
+            margin-bottom: 24px; 
+        }
+        .stat-box { 
+            background: #111827; 
+            padding: 18px 20px; 
+            border-radius: 10px; 
+            border-left: 4px solid #2563eb;
+        }
+        .stat-box .number { 
+            font-size: 28px; 
+            font-weight: 600; 
+            color: #ffffff;
+            line-height: 1.2;
+        }
+        .stat-box .label { 
+            color: #9ca3af; 
+            font-size: 13px; 
+            margin-top: 4px; 
+            font-weight: 400;
+        }
+        .stat-box:nth-child(2) { border-left-color: #f59e0b; }
+        .stat-box:nth-child(3) { border-left-color: #ef4444; }
+        .stat-box:nth-child(4) { border-left-color: #8b5cf6; }
+        .stat-box:nth-child(5) { border-left-color: #06b6d4; }
+        .stat-box:nth-child(6) { border-left-color: #34d399; }
+        
+        .alerts-section { 
+            background: #111827; 
+            border-radius: 12px; 
+            padding: 20px; 
+            max-height: 600px; 
+            overflow-y: auto; 
+        }
+        .alerts-section::-webkit-scrollbar {
+            width: 6px;
+        }
+        .alerts-section::-webkit-scrollbar-track {
+            background: #1a2332;
+            border-radius: 10px;
+        }
+        .alerts-section::-webkit-scrollbar-thumb {
+            background: #374151;
+            border-radius: 10px;
+        }
+        
+        .alert-item { 
+            background: #1a2332; 
+            padding: 14px 18px; 
+            margin: 6px 0; 
+            border-radius: 8px; 
+            border-left: 4px solid #2563eb;
+            animation: slideIn 0.25s ease; 
+            transition: background 0.15s;
+        }
+        .alert-item:hover {
+            background: #1f2a3a;
+        }
+        @keyframes slideIn { 
+            from { transform: translateX(-12px); opacity: 0; } 
+            to { transform: translateX(0); opacity: 1; } 
+        }
+        .alert-item .time { 
+            font-size: 12px; 
+            color: #9ca3af; 
+            font-weight: 400;
+        }
+        .alert-item .msg { 
+            font-weight: 500; 
+            margin: 4px 0; 
+            color: #e8edf2;
+        }
+        .alert-item .detail { 
+            font-size: 13px; 
+            color: #9ca3af; 
+        }
+        .alert-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .alert-top .left { flex: 1; min-width: 0; }
+        .alert-top .right { flex-shrink: 0; display: flex; align-items: center; gap: 10px; }
+        
+        .badge { 
+            padding: 3px 12px; 
+            border-radius: 20px; 
+            font-size: 11px; 
+            font-weight: 600; 
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .badge.critical { background: #7f1d1d; color: #fca5a5; border: 1px solid #991b1b; }
+        .badge.high { background: #78350f; color: #fcd34d; border: 1px solid #92400e; }
+        .badge.medium { background: #1e3a5f; color: #93c5fd; border: 1px solid #2563eb; }
+        .badge.low { background: #064e3b; color: #6ee7b7; border: 1px solid #065f46; }
+        
+        .badge-level {
+            font-size: 12px;
+            color: #9ca3af;
+            font-weight: 400;
+        }
+        
+        .empty { 
+            text-align: center; 
+            color: #6b7280; 
+            padding: 50px 20px; 
+            font-size: 15px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #e8edf2;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-title .count {
+            font-weight: 400;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+        
+        .tabs { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 20px; 
+        }
+        .tab { 
+            padding: 10px 24px; 
+            background: #1a2332; 
+            border: 1px solid #1f2937;
+            border-radius: 8px; 
+            color: #9ca3af; 
+            cursor: pointer; 
+            font-size: 14px; 
+            font-weight: 500;
+            transition: 0.2s; 
+        }
+        .tab.active { 
+            background: #2563eb; 
+            border-color: #2563eb;
+            color: #ffffff; 
+        }
+        .tab:hover:not(.active) { 
+            background: #1f2a3a; 
+            color: #e8edf2;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .history-filters { 
+            display: flex; 
+            gap: 12px; 
+            margin-bottom: 20px; 
+            flex-wrap: wrap; 
+            align-items: center;
+        }
+        .history-filters input, 
+        .history-filters select { 
+            padding: 8px 14px; 
+            border-radius: 6px; 
+            border: 1px solid #1f2937; 
+            background: #1a2332; 
+            color: #e8edf2; 
+            font-size: 13px;
+        }
+        .history-filters input::placeholder {
+            color: #6b7280;
+        }
+        .history-filters input:focus,
+        .history-filters select:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+        .history-filters button { 
+            padding: 8px 20px; 
+            border-radius: 6px; 
+            border: none; 
+            background: #2563eb; 
+            color: #ffffff; 
+            cursor: pointer; 
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+        .history-filters button:hover { 
+            background: #1d4ed8; 
+        }
+        
+        .time-detail { 
+            font-size: 11px; 
+            color: #22d3ee; 
+            margin-top: 3px; 
+        }
+        
+        @media (max-width: 768px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .header h1 { font-size: 20px; }
+            .stat-box .number { font-size: 24px; }
+            .container { padding: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EDR <span>WebHook</span></h1>
+            <div class="header-sub">
+                <span class="status-text">
+                    <span class="live-indicator"></span>
+                    Cảnh báo thời gian thực
+                </span>
+                <span class="status-text" style="color: #6b7280; font-size: 13px;">
+                    Đang chờ dữ liệu từ Wazuh
+                </span>
+            </div>
+        </div>
+        
+        <div class="webhook-status">
+            <span>Trạng thái Webhook: </span>
+            <span class="status" id="webhookStatus">Đang hoạt động - Lắng nghe tại /webhook</span>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <div class="number" id="totalAlerts">0</div>
+                <div class="label">Tổng cảnh báo</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="highAlerts">0</div>
+                <div class="label">Mức cao (Cấp 7+)</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="criticalAlerts">0</div>
+                <div class="label">Nghiêm trọng (Cấp 10+)</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="activeAgents">0</div>
+                <div class="label">Agent đang hoạt động</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="avgTime">0</div>
+                <div class="label">T/g xử lý trung bình (ms)</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="dbAlerts">0</div>
+                <div class="label">Cảnh báo đã lưu</div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('realtime')">Trực tiếp</button>
+            <button class="tab" onclick="switchTab('history')">Lịch sử</button>
+        </div>
+        
+        <div id="tab-realtime" class="tab-content active">
+            <div class="alerts-section" id="alertsContainer">
+                <div class="empty">Đang đợi cảnh báo...</div>
+            </div>
+        </div>
+        
+        <div id="tab-history" class="tab-content">
+            <div class="history-filters">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm cảnh báo..." onkeyup="filterHistory()">
+                <select id="levelFilter" onchange="filterHistory()">
+                    <option value="all">Tất cả cấp độ</option>
+                    <option value="10">Nghiêm trọng (10+)</option>
+                    <option value="7">Cao (7+)</option>
+                    <option value="3">Trung bình (3+)</option>
+                </select>
+                <button onclick="loadHistory()">Làm mới</button>
+            </div>
+            <div class="alerts-section" id="historyContainer">
+                <div class="empty">Đang tải lịch sử...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const socket = io();
+        let totalAlerts = 0;
+        let highAlerts = 0;
+        let criticalAlerts = 0;
+        let avgTime = 0;
+        let timeCount = 0;
+        let allAlerts = [];
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.querySelector(`.tab[onclick*="${tabName}"]`).classList.add('active');
+            if (tabName === 'history') loadHistory();
+        }
+        
+        socket.on('connect', function() {
+            console.log('Đã kết nối tới máy chủ');
+            document.getElementById('webhookStatus').textContent = 'Đã kết nối - Đang chờ cảnh báo';
+        });
+        
+        socket.on('history', function(data) {
+            console.log('Đã nhận lịch sử:', data.total, 'cảnh báo');
+            if (data.alerts && data.alerts.length > 0) {
+                data.alerts.forEach(alert => addAlert(alert));
+                totalAlerts = data.total;
+                updateStats();
+            }
+        });
+        
+        socket.on('new_alert', function(data) {
+            console.log('Cảnh báo mới:', data.message);
+            totalAlerts++;
+            if (data.level >= 10) criticalAlerts++;
+            if (data.level >= 7) highAlerts++;
+            
+            if (data.processing_time) {
+                timeCount++;
+                avgTime = ((avgTime * (timeCount - 1)) + data.processing_time) / timeCount;
+                document.getElementById('avgTime').textContent = avgTime.toFixed(1);
+            }
+            
+            allAlerts.unshift(data);
+            addAlert(data);
+            updateStats();
+            
+            if (data.level >= 7) {
+                try {
+                    new Audio('/static/alert.mp3').play();
+                } catch(e) {}
+            }
+        });
+        
+        socket.on('critical_alert', function(data) {
+            console.log('CẢNH BÁO NGHIÊM TRỌNG:', data.message);
+            if (Notification.permission === 'granted') {
+                new Notification('Cảnh báo nghiêm trọng', {
+                    body: data.message,
+                    icon: '/static/alert-icon.png'
+                });
+            }
+        });
+        
+        socket.on('disconnect', function() {
+            console.log('Mất kết nối');
+            document.getElementById('webhookStatus').textContent = 'Mất kết nối - Đang thử kết nối lại...';
+        });
+        
+        function addAlert(alert) {
+            const container = document.getElementById('alertsContainer');
+            const empty = container.querySelector('.empty');
+            if (empty) empty.remove();
+            
+            const div = document.createElement('div');
+            div.className = 'alert-item';
+            
+            const level = alert.level || 0;
+            const badgeClass = level >= 10 ? 'critical' : level >= 7 ? 'high' : 'medium';
+            const badgeText = level >= 10 ? 'Nghiêm trọng' : level >= 7 ? 'Cao' : 'Trung bình';
+            
+            const time = alert.timestamp ? new Date(alert.timestamp).toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN');
+            const message = alert.message || 'Cảnh báo không xác định';
+            const agent = alert.agent_name || 'Không xác định';
+            const processingTime = alert.processing_time || 0;
+            
+            div.innerHTML = `
+                <div class="alert-top">
+                    <div class="left">
+                        <div class="time">${time} | Agent: ${agent}</div>
+                        <div class="msg">${message}</div>
+                        ${processingTime ? `<div class="time-detail">Thời gian xử lý: ${processingTime.toFixed(1)}ms</div>` : ''}
+                    </div>
+                    <div class="right">
+                        <span class="badge ${badgeClass}">${badgeText}</span>
+                        <span class="badge-level">Cấp ${level}</span>
+                    </div>
+                </div>
+            `;
+            
+            container.prepend(div);
+            
+            while (container.children.length > 100) {
+                container.removeChild(container.lastChild);
+            }
+        }
+        
+        function updateStats() {
+            document.getElementById('totalAlerts').textContent = totalAlerts;
+            document.getElementById('highAlerts').textContent = highAlerts;
+            document.getElementById('criticalAlerts').textContent = criticalAlerts;
+        }
+        
+        function loadHistory() {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '<div class="empty">Đang tải...</div>';
+            
+            fetch('/api/alerts/history')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.alerts && data.alerts.length > 0) {
+                        allAlerts = data.alerts;
+                        renderHistory(data.alerts);
+                        document.getElementById('dbAlerts').textContent = data.total;
+                    } else {
+                        container.innerHTML = '<div class="empty">Không tìm thấy lịch sử</div>';
+                    }
+                })
+                .catch(() => {
+                    container.innerHTML = '<div class="empty">Lỗi tải lịch sử</div>';
+                });
+        }
+        
+        function renderHistory(alerts) {
+            const container = document.getElementById('historyContainer');
+            container.innerHTML = '';
+            
+            alerts.forEach(alert => {
+                const div = document.createElement('div');
+                div.className = 'alert-item';
+                
+                const level = alert.level || 0;
+                const badgeClass = level >= 10 ? 'critical' : level >= 7 ? 'high' : 'medium';
+                const badgeText = level >= 10 ? 'Nghiêm trọng' : level >= 7 ? 'Cao' : 'Trung bình';
+                
+                const time = alert.timestamp ? new Date(alert.timestamp).toLocaleString('vi-VN') : new Date().toLocaleString('vi-VN');
+                const message = alert.message || 'Cảnh báo không xác định';
+                const agent = alert.agent_name || 'Không xác định';
+                
+                div.innerHTML = `
+                    <div class="alert-top">
+                        <div class="left">
+                            <div class="time">${time} | Agent: ${agent}</div>
+                            <div class="msg">${message}</div>
+                            ${alert.confidence ? `<div class="detail">Độ tin cậy: ${(alert.confidence * 100).toFixed(1)}%</div>` : ''}
+                        </div>
+                        <div class="right">
+                            <span class="badge ${badgeClass}">${badgeText}</span>
+                            <span class="badge-level">Cấp ${level}</span>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function filterHistory() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const level = document.getElementById('levelFilter').value;
+            
+            let filtered = allAlerts;
+            if (search) {
+                filtered = filtered.filter(a => 
+                    a.message.toLowerCase().includes(search) || 
+                    (a.agent_name && a.agent_name.toLowerCase().includes(search))
+                );
+            }
+            if (level !== 'all') {
+                filtered = filtered.filter(a => a.level >= parseInt(level));
+            }
+            renderHistory(filtered);
+        }
+        
+        fetch('/api/agents')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('activeAgents').textContent = data.total || 0;
+            })
+            .catch(() => {
+                document.getElementById('activeAgents').textContent = '--';
+            });
+        
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+        
+        setTimeout(loadHistory, 1000);
+        
+        console.log('EDR Dashboard sẵn sàng');
+    </script>
+</body>
+</html>
